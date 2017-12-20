@@ -1,0 +1,55 @@
+<% content_for :title, "Movist | Recomendações" %>
+
+<div class="container">
+  <div class="row">
+    <div class="col s12 m12">
+      <div class="card horizontal hoverable">
+        <div class="card-content" style="width: 100%">
+          <div class="card-title">
+            Filmes Recomendados
+
+            <div class="right">
+              <a href="<%= recommendations_check_path %>" class="btn"> Atualizar Recomendações </a>
+            </div>
+          </div>
+          <% unless @set.nil? %>
+          <div class="row">
+            <% @set.recommendations.each_with_index do |rec, index| %>
+                <div class="col s4 m2">
+                  <div class="card hoverable">
+                    <div id="content-<%= rec.id %>" class="card-image waves-effect waves-block waves-light">
+                      <%= image_tag (rec.movie.image ? rec.movie.image : 'indisponivel.jpg'), class: 'img-responsive' %>
+                      <% if rec.like %>
+                        <i class="seen circle fa fa-thumbs-up light-green accent-2 tooltipped" data-position="bottom" data-delay="50" data-tooltip="Gostou"></i>
+                      <% else %>
+                        <i class="seen circle fa fa-thumbs-down light-red accent-2 tooltipped" data-position="bottom" data-delay="50" data-tooltip="Não Gostou"></i>
+                      <% end %>
+                    </div>
+                    <div class="card-content">
+                      <span><%= rec.movie.title %></span>
+                    </div>
+                    <div class="card-reveal" style="text-align: left !important;">
+                        <span class="card-title"><%= rec.movie.title %>
+                          <i class="material-icons small right">close</i></span>
+                      <p> <%= rec.movie.overview %></p>
+                      <a href="<%= movies_show_path(rec.movie) %>" class="btn"> Ver Mais </a>
+                    </div>
+                    <div class="card-action">
+                      <a href="<%= movies_show_path(rec.movie) %>" class="yellow-text text-darken-2">
+                        Ver Info </a>
+                      <a onclick="setRecID('<%= rec.id %>');$('#modal-rating-recommendations').modal('open')" class="yellow-text text-darken-2 modal-trigger"> Gostou? </a>
+                    </div>
+                  </div>
+                </div>
+                <% if (index + 1) % 6 == 0 %>
+                    </div>
+                    <div class="row">
+                <% end %>
+            <% end %>
+          </div>
+          <% end %>
+          </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,72 @@
+<div class="container">
+  <%= form_tag(lists_path, method: :post, class: "col s12 center-align") do%>
+    <h4> Busca de Listas </h4>
+    <div class="row">
+      <div class="input-field col s6 offset-s3">
+        <%= text_field_tag :query,@query, placeholder: 'Digite termo para pesquisa', required: true, class: 'validate'%>
+      </div>
+      <div class="input-field col s2">
+        <%= button_tag class: 'btn' do %>
+          <i class="fa fa-search"></i>
+        <% end %>
+        <% if @type == "query" %>
+          <a href="/lists" class="btn"><i class="fa fa-ban"></i></a>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+</div>
+
+  <div class="container">
+    <div class="col s12 center-align">
+        <% if @type == "query" %>
+          <h5> Resultados da Busca </h5> <h6>(<%= @total_records rescue 0 %> listas encontradas) </h6>
+        <% else %>
+          <h5> Listas </h5>
+        <% end %>
+        <% if not @lists.empty? %>
+      <%= will_paginate @lists %>
+      <div class="row">
+          <% @lists.each_with_index do |list, index|%>
+            <div class="col s4 m2">
+              <div class="card hoverable">
+                <div id="content-<%= list.id %>" class="card-image waves-effect waves-block waves-light">
+                  <% if list.movies.empty?%>
+                    <%= image_tag 'indisponivel.jpg', class: 'img-responsive activator'%>
+                  <% else %>
+                    <div class="row">
+                    <% list.movies[0..1].each do |movie|%>
+                      <div class="col s6">
+                        <%= image_tag (movie.image ? movie.image : 'indisponivel.jpg'), class: 'img-responsive activator'%>
+                      </div>
+                    <% end %>
+                    </div>
+                    <% if list.movies.length > 2 %>
+                    <div class="row">
+                    <% list.movies[2..3].each do |movie|%>
+                      <div class="col s6">
+                        <%= image_tag (movie.image ? movie.image : 'indisponivel.jpg'), class: 'img-responsive activator'%>
+                      </div>
+                    <% end %>
+                    </div>
+                    <% end %>
+                  <% end %>
+                </div>
+                <div class="card-content">
+                  <span class="activator"><i><%= list.title %></i></span>
+                  <span class="activator">Por <%= list.user.name %></span>
+                </div>
+                <div class="card-action">
+                  <a href="<%= lists_show_path(list)%>" class=" action"> Ver</a>
+                </div>
+              </div>
+            </div>
+            <% if (index + 1) % 6 == 0%>
+              </div>
+              <div class="row">
+            <% end %>
+          <% end %>
+      </div>
+      <% end %>
+    </div>
+  </div>

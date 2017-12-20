@@ -1,0 +1,65 @@
+<div class="container">
+  <div class="card big">
+    <div class="card-content">
+      <span class="card-title center-align">Movist - Registrar</span>
+
+        <%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { class: "col s12", id: 'formValidate'}) do |f| %>
+        <%= devise_error_messages! %>
+          <div class="row">
+            <div class="input-field col s12">
+              <%= f.text_field :name, autofocus: true , class: 'validate' , id: 'uname'%>
+              <%= f.label :name, 'Nome' %><br />
+            </div>
+          </div>
+          <div class="row">
+            <div class="input-field col s12">
+              <%= f.email_field :email, class: 'validate' , id: 'cemail' %>
+              <%= f.label :email, 'Email' %><br />
+            </div>
+          </div>
+          <div class="row">
+            <div class="input-field col s12">
+              <%= f.password_field :password, autocomplete: "off" , class: 'validate', id: 'password' %>
+              <%= f.label :password, 'Senha' %><br />
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="input-field col s12">
+              <%= f.password_field :password, autocomplete: "off" , class: 'validate', id: "cpassword" %>
+              <%= f.label :password, 'Confirmar Senha' %><br />
+            </div>
+          </div>
+
+          <div class="card-action">
+            <%= f.submit "Registrar" , class: 'waves-effect waves-light btn' %>
+            <%= render "devise/shared/links" %>
+          </div>
+        <% end %>
+    </div>
+  </div>
+</div>
+
+<script>
+  $("#formValidate").validate({
+    rules: {
+      uname: {
+        required: true,
+        minlength: 5
+      },
+      cemail: {
+        required: true,
+        email:true
+      },
+      password: {
+        required: true,
+        minlength: <%= @minimum_password_length%>
+      },
+      cpassword: {
+        required: true,
+        minlength: <%= @minimum_password_length%>,
+        equalTo: "#password"
+      },
+    }
+  });
+</script>

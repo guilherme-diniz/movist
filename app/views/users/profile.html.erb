@@ -1,0 +1,108 @@
+<% content_for :title, "Movist | Perfil #{current_user.name}" %>
+
+<div class="container">
+  <div class="row">
+    <div class="col s12 m12">
+      <div class="card horizontal hoverable">
+        <div id="content-<%= current_user.id %>" class="card-image waves-effect waves-block waves-light">
+          <%= image_tag (current_user.uid ? @profile_image : 'indisponivel.jpg'), class: 'img-responsive' %>
+        </div>
+        <div class="card-content" style="width: 100%">
+          <span class="card-title center-align">
+						<%= current_user.name %> <br/>
+            <%= current_user.email %> <br/>
+					</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col s12 m12">
+      <div class="card horizontal hoverable">
+        <div class="card-content" style="width: 100%">
+          <div class="card-title">
+            Últimos Filmes Vistos
+
+          </div>
+          <div class="row">
+            <% current_user.movies.reverse[0..9].each_with_index do |movie, index| %>
+                <div class="col s4 m2">
+                  <div class="card hoverable">
+                    <div id="content-<%= movie.id %>" class="card-image waves-effect waves-block waves-light">
+                      <%= image_tag (movie.image ? movie.image : 'indisponivel.jpg'), class: 'img-responsive' %>
+                      <% if movie.users.include?(current_user) %>
+                          <i class="seen circle fa fa-check light-green accent-2 tooltipped" data-position="bottom" data-delay="50" data-tooltip="Visto"></i>
+                      <% end %>
+                    </div>
+                    <div class="card-content">
+                      <span><%= movie.title %></span>
+                    </div>
+                    <div class="card-reveal" style="text-align: left !important;">
+                        <span class="card-title"><%= movie.title %>
+                          <i class="material-icons small right">close</i></span>
+                      <p> <%= movie.overview %></p>
+                      <a href="<%= movies_show_path(movie) %>" class="btn"> Ver Mais </a>
+                    </div>
+                    <div class="card-action">
+                      <a href="<%= movies_show_path(movie) %>" class="yellow-text text-darken-2"><i class="fa fa-share"></i>
+                        Ver Info </a>
+                    </div>
+                  </div>
+                </div>
+                <% if (index + 1) % 6 == 0 %>
+                    </div>
+                    <div class="row">
+                <% end %>
+            <% end %>
+          </div>
+          </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col s12 m12">
+      <div class="card horizontal hoverable">
+        <div class="card-content" style="width: 100%">
+          <div class="card-title">
+            Listas
+
+            <div class="right">
+              <a onclick="$('#modal-list-new').modal('open')" class="waves-effect waves-light btn modal-trigger" class="btn"> Nova lista </a>
+            </div>
+          </div>
+
+          <% current_user.lists.each_with_index do |list, index| %>
+              <div class="col s4 m2">
+                <div class="card hoverable">
+                  <div id="content-<%= list.id %>" class="card-image waves-effect waves-block waves-light">
+                    <% if list.movies.empty? %>
+                        <%= image_tag 'indisponivel.jpg', class: 'img-responsive activator' %>
+                    <% else %>
+                        <% list.movies[0..3].each do |movie| %>
+                            <div class="col s6">
+                              <%= image_tag (movie.image ? movie.image : 'indisponivel.jpg'), class: 'img-responsive activator' %>
+                            </div>
+                        <% end %>
+                    <% end %>
+                  </div>
+                  <div class="card-content">
+                    <span class="activator"><%= list.title %></span>
+                  </div>
+                  <div class="card-action">
+                    <a href="<%= lists_show_path(list) %>" class=" action"> Ver</a>
+                    <a onclick="removeList('<%= list.id %>')" class=" action"> Excluir</a>
+                  </div>
+                </div>
+              </div>
+              <% if (index + 1) % 6 == 0 %>
+                  </div>
+                  <div class="row">
+              <% end %>
+          <% end %>
+          </div>
+          </div>
+    </div>
+  </div>
+</div>

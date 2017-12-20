@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= yield(:title)%></title>
+    <%= csrf_meta_tags %>
+
+    <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track': 'reload' %>
+    <%= javascript_include_tag 'application', 'data-turbolinks-track': 'reload' %>
+
+		<%= yield(:style) %>
+  </head>
+
+  <body class="<%= request.path_info.include?('movies/show') ? 'details' : '' %>">
+    <nav>
+	    <div class="nav-wrapper blue-grey darken-1">
+	      <a href="#!" class="brand-logo center">Movist </a>
+	      <a href="#" data-activates="mobile-demo" class="button-collapse left"><i class="material-icons">menu</i></a>
+	      <ul class="left hide-on-med-and-down">
+	        <li class="<%= request.fullpath.eql?(root_path) ? 'active' : '' %>"><%= link_to 'Início', root_path %></li>
+          <li class="<%= request.fullpath.eql?(movies_path) ? 'active' : '' %>"><%= link_to 'Filmes', movies_path %></li>
+	        <li class="<%= request.fullpath.eql?(lists_path) ? 'active' : '' %>"><%= link_to 'Listas', lists_path %></li>
+	        <li><a class="<%= request.fullpath.eql?(recommendations_path) ? 'active' : '' %>"><%= link_to 'Recomendações', recommendations_path %></a></li>
+	      </ul>
+	      <ul class="side-nav" id="mobile-demo">
+	        <li class="<%= request.fullpath.eql?(root_path) ? 'active' : '' %>"><%= link_to 'Início', root_path %></li>
+	        <li class="<%= request.fullpath.eql?(movies_path) ? 'active' : '' %>"><%= link_to 'Filmes', movies_path %></li>
+          <li class="<%= request.fullpath.eql?(lists_path) ? 'active' : '' %>"><%= link_to 'Listas', lists_path %></li>
+	        <li><a class="<%= request.fullpath.eql?(recommendations_path) ? 'active' : '' %>"><%= link_to 'Recomendações', recommendations_path %></a></li>
+	        <li><%= link_to 'Entrar com Facebook', user_facebook_omniauth_authorize_path, class: "waves-effect waves-light btn blue"%></li>
+	      </ul>
+	     	<% if user_signed_in? %>
+	     		<div class="chip right dropdown-button" data-activates="dropdown-profile">
+	     			<%= image_tag current_user.image || "" %>
+		      	<%= current_user.name %>
+		      	<i class="arrow material-icons">arrow_drop_down</i>
+		      </div>
+		      <ul id="dropdown-profile" class="dropdown-content">
+					  <li><a href="<%= users_profile_path %>" class="blue-text">Perfil</a></li>
+					  <li class="divider blue"></li>
+					  <li><%= link_to('Sair', destroy_user_session_path, method: :delete, class: "blue-text") %></li>
+					</ul>
+	     	<% else %>
+	     		<ul class="right hide-on-med-and-down">
+		      	<li> <%= link_to 'Entrar com Facebook', user_facebook_omniauth_authorize_path, class: "waves-effect waves-light btn blue"%></li>
+		      </ul>
+	     	<% end %>
+	    </div>
+	  </nav>
+
+  <% unless flash.empty? %>
+  <div class="row">
+    <% if notice %>
+	   <p class="notice col s6 offset-s3 teal lighten-2 white-text"><%= notice %></p>
+    <% end %>
+    <% if alert %>
+    <p class="alert col s6 offset-s3 red lighten-2 white-text"><%= alert %></p>
+    <% end %>
+  </div>
+  <% end %>
+
+  <%= yield %>
+
+
+		<!-- RATING -->
+	  <div id="modal-rating" class="modal">
+	    <div class="modal-content">
+	      <h4><i class="fa fa-star"></i> Avaliação</h4>
+	      <div class="collection col s6 offset-s3">
+		      <div class="rating-movie" style="margin-left: 25%;">
+					    <input type="radio" name="rate" class="rating" value="1" />
+					    <input type="radio" name="rate" class="rating" value="2" />
+					    <input type="radio" name="rate" class="rating" value="3" />
+					    <input type="radio" name="rate" class="rating" value="4" />
+					    <input type="radio" name="rate" class="rating" value="5" />
+					    <input type="radio" name="rate" class="rating" value="6" />
+					    <input type="radio" name="rate" class="rating" value="7" />
+					    <input type="radio" name="rate" class="rating" value="8" />
+					    <input type="radio" name="rate" class="rating" value="9" />
+					    <input type="radio" name="rate" class="rating" value="10" />
+					</div>
+				</div>
+	    </div>
+	    <div class="modal-footer">
+	      <a class="modal-action modal-close waves-effect waves-green btn-flat">Fechar</a>
+	    </div>
+	  </div>
+
+	  <!-- LISTA -->
+	  <div id="modal-list-add" class="modal bottom-sheet">
+	    <div class="modal-content">
+	      <h4><i class="fa fa-plus"></i> Adicionar a uma Lista </h4> <a onclick="$('#modal-list-new').modal('open')" class="btn"> Nova Lista</a>
+	      <div class="collection">
+          <% if user_signed_in? %>
+  	      	<% current_user.lists.each do |list| %>
+  						<a onclick="addToList('<%= list.id %>')" class="collection-item modal-close"><%= list.title %></a>
+  	      	<% end %>
+            <% if current_user.lists.empty? %>
+              <p class="empty-lists"> Não há listas criadas! </p>
+            <% end %>
+          <% end %>
+          </div>
+	      </div>
+	    </div>
+	  </div>
+
+	  <div id="modal-list-new" class="modal">
+	    <div class="modal-content">
+	      <h4><i class="fa fa-list"></i> Nova Lista </h4>
+	      <div class="row">
+	      	<div class="input-field col s12">
+	      		<input placeholder="Título" id="title" name="title" type="text" class="validate">
+          	<label for="title">Título</label>
+	      	</div>
+	      </div>
+	      <div class="row">
+	      	<div class="input-field col s12">
+            <textarea id="description" name="description" class="materialize-textarea"></textarea>
+            <label for="description">Descrição</label>
+          </div>
+	      </div>
+	    </div>
+	    <div class="modal-footer">
+	      <a onclick="saveList()" class="modal-action modal-close waves-effect waves-green btn-flat">Salvar</a>
+	    </div>
+	  </div>
+  </body>
+
+  <!-- RATING -->
+<div id="modal-rating-recommendations" class="modal">
+  <div class="modal-content">
+    <h4><i class="fa fa-star"></i> Gostou da recomendação? </h4>
+    <div class="collection col s6 offset-s3">
+      <div class="rating-recommendation" style="margin-left: 25%;">
+          <input type="radio" name="rate" class="rating" value="1" />
+          <input type="radio" name="rate" class="rating" value="2" />
+          <input type="radio" name="rate" class="rating" value="3" />
+          <input type="radio" name="rate" class="rating" value="4" />
+          <input type="radio" name="rate" class="rating" value="5" />
+          <input type="radio" name="rate" class="rating" value="6" />
+          <input type="radio" name="rate" class="rating" value="7" />
+          <input type="radio" name="rate" class="rating" value="8" />
+          <input type="radio" name="rate" class="rating" value="9" />
+          <input type="radio" name="rate" class="rating" value="10" />
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <a class="modal-action modal-close waves-effect waves-green btn-flat">Fechar</a>
+  </div>
+</div>
+
+  <script>
+  	var selectedMovie;
+    var selectedRec;
+
+    function setRecID(id) {
+        selectedRec = id
+    }
+
+    $( document ).ready(function(){
+      $(".button-collapse").sideNav({
+        menuWidth: 300, // Default is 300
+        edge: 'left', // Choose the horizontal origin
+        closeOnClick: true, // Closes side-nav on <a> clicks, useful for Angular/Meteor
+        draggable: true // Choose whether you can drag to open on touch screens
+      });
+
+      // $(".rating-movie").rating();
+      $('.modal').modal();
+
+      $('.rating-movie').rating(function(vote, event){
+        $.post("<%= movies_rate_path%>", {id: selectedMovie, rate: vote})
+        .done(function(data) {
+          Materialize.toast(data.message, 4000);
+        })
+        .fail(function() {
+          Materialize.toast("Erro ao salvar avaliação.", 4000);
+        });
+      });
+
+      $('.rating-recommendation').rating(function(vote, event){
+          $.post("<%= recommendations_rate_path%>", {id: selectedRec, rate: vote})
+          .done(function(data) {
+            Materialize.toast(data.message, 4000);
+
+            if (data.like) {
+              $("#content-" + selectedRec).append('<i class="seen circle fa fa-thumbs-up light-green accent-2 tooltipped" data-position="bottom" data-delay="50" data-tooltip="Gostou"></i>');
+            } else {
+              $("#content-" + selectedRec).append('<i class="seen circle fa fa-thumbs-down light-red accent-2 tooltipped" data-position="bottom" data-delay="50" data-tooltip="Não Gostou"></i>');
+            }
+          })
+          .fail(function() {
+            Materialize.toast("Erro ao salvar avaliação.", 4000);
+          });
+        });
+    });
+
+	  function markAsSeen(movieId) {
+			$.post('<%= movies_seen_path %>', {id: movieId})
+				.done(function(data) {
+					console.log(data);
+					Materialize.toast(data.message, 4000);
+					$("#content-" + movieId).append('<i class="seen circle fa fa-check light-green accent-2 tooltipped" data-position="bottom" data-delay="50" data-tooltip="Visto"></i>');
+
+					$("li.mark-seen").addClass("hide");
+					$("li.mark-unseen").removeClass("hide");
+				})
+				.fail(function() {
+					Materialize.toast("Erro ao marcar como visto.", 4000);
+				});
+		}
+
+		function markAsUnseen(movieId) {
+			$.post('<%= movies_unseen_path %>', {id: movieId})
+				.done(function(data) {
+					console.log(data);
+					Materialize.toast(data.message, 4000);
+					$("#content-" + movieId + " i.seen").remove();
+
+					$("li.mark-seen").removeClass("hide");
+					$("li.mark-unseen").addClass("hide");
+				})
+				.fail(function() {
+					Materialize.toast("Erro ao marcar como não visto.", 4000);
+				});
+		}
+
+		function setMovieID(movieId) {
+			selectedMovie = movieId;
+		}
+
+    function saveList() {
+      var post_data = {
+        'title': $("#modal-list-new #title").val(),
+        'description': $("#modal-list-new #description").val()
+      };
+
+      $.post('<%= lists_new_path %>', post_data)
+        .done(function (data) {
+
+          if ( $("#modal-list-add.open").length > 0 ) {
+            $("#modal-list-add .collection").append('<a onclick="addToList(' + data.id + ')" class="collection-item">' + post_data.title + '</a>');
+
+            if ($(".empty-lists").length > 0) {
+              $(".empty-lists").addClass("hide");
+            }
+          } else {
+              location.reload();
+          }
+
+          Materialize.toast(data.message, 4000);
+        })
+        .fail(function () {
+          Materialize.toast("Erro ao criar lista.", 4000);
+        });
+    }
+
+    function addToList(listId) {
+      var post_data = {
+        "list_id": listId,
+        "movie_id": selectedMovie
+      }
+
+      console.log(post_data);
+
+     $.post('<%= lists_addTo_path %>', post_data)
+        .done(function (data) {
+          console.log(data);
+          Materialize.toast(data.message, 4000);
+        })
+        .fail(function () {
+          Materialize.toast("Erro ao adicionar a lista.", 4000);
+        });
+    }
+
+    function removeList(listId) {
+  	    var url = '/lists/' + listId;
+
+        $.ajax({
+          method: 'delete',
+          url: url
+        }).done(function(data){
+            Materialize.toast(data.message, 4000);
+            location.reload();
+        })
+        .fail(function () {
+            Materialize.toast("Erro ao remover.", 4000);
+        });
+    }
+  </script>
+</html>

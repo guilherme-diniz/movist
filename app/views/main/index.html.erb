@@ -1,0 +1,76 @@
+<div class="section no-pad-bot" id="index-banner">
+    <div class="container">
+      <br><br>
+      <h1 class="header center blue-grey-text darken-1-text">Movist</h1>
+      <div class="row center">
+        <h5 class="header col s12 light">Crie suas listas de filmes e compartilhe!</h5>
+      </div>
+      <div class="row center">
+        <% if user_signed_in? %>
+          <div class="col s6 m8 offset-m2 l6 offset-l3">
+            <div class="card-panel grey lighten-5 z-depth-1">
+              <div class="row valign-wrapper">
+                <div class="col s12">
+                  <h5 class="black-text">
+                    Bem Vindo 
+                  </h5>
+                  <%= image_tag current_user.image || "", class: 'circle responsive-img' %>
+                  <h6 class="black-text">
+                    <%= current_user.name %>
+                  </h6>
+                </div>
+              </div>
+            </div>
+          </div>
+        <% else %>
+          <%= link_to 'Entrar com Facebook', user_facebook_omniauth_authorize_path, class: "waves-effect waves-light btn-large blue"%>
+        <% end %>
+      </div>
+      <br><br>
+
+    </div>
+
+    <div class="container">
+      <div class="section">
+
+        <!--   Icon Section   -->
+        <div class="row">
+          <div class="col s12 m3">
+            <div class="icon-block">
+              <h2 class="center light-blue-text"><i class="fa fa-search"></i></h2>
+              <h5 class="center">Busque</h5>
+
+              <p class="light">Procure por filmes que você já viu ou está querendo ver. Veja informações como atores, diretor, trailers, imagens, entre outras.</p>
+            </div>
+          </div>
+
+          <div class="col s12 m3">
+            <div class="icon-block">
+              <h2 class="center light-blue-text"><i class="fa fa-star"></i></h2>
+              <h5 class="center">Favorite</h5>
+
+              <p class="light">Marque filmes como já visto ou para assistir depois. Dê suas notas e comentários sobre os filmes. </p>
+            </div>
+          </div>
+
+          <div class="col s12 m3">
+            <div class="icon-block">
+              <h2 class="center light-blue-text"><i class="fa fa-list"></i></h2>
+              <h5 class="center">Crie ou Edite</h5>
+
+              <p class="light">Crie ou edite suas listas de filmes. Faça listas para assistir depois, listas temáticas (Natal, Inverno, Oscar), lista de sugestôes. Use sua imaginação!!</p>
+            </div>
+          </div>
+          <div class="col s12 m3">
+            <div class="icon-block">
+              <h2 class="center light-blue-text"><i class="fa fa-share-alt"></i></h2>
+              <h5 class="center">Siga e Compartilhe</h5>
+
+              <p class="light">Veja as listas de outros usuários. Compartilhe suas listas para que outros vejam. Use a aba de recomendações para ver aquelas que identificamos como as melhores para você!</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
